@@ -281,7 +281,7 @@ use {$model_namespace}\\{$managerName};
 			return JSON::to(500, PARAMS_IS_NULL);
 		}
 		
-		$model = ' . $className . '::find()->whereIn(\'id\', $_key);
+		$model = ' . $className . '::query()->whereIn(\'id\', $_key);
 		if (!$model->delete()) {
 			return JSON::to(500, DB_ERROR_BUSY);
         }
@@ -354,7 +354,7 @@ use {$model_namespace}\\{$managerName};
         if (!$model->delete()) {
 			return JSON::to(500, $model->getLastError());
         }
-        return JSON::to(0, $model);
+        return JSON::to(0);
     }';
 	}
 
@@ -393,11 +393,11 @@ use {$model_namespace}\\{$managerName};
 	    }
 	    	    
 	    //列表输出
-	    $model = ' . $managerName . '::find()->where($this->request->gets())->orderBy($order);
+	    $model = ' . $managerName . '::query()->where($this->request->gets())->orderBy($order);
 
 	   	$keyword = $this->request->query(\'keyword\', null); 
 	    if (!empty($keyword)) {
-	        $model->like(\'keyword\', $keyword);
+	        $model->whereLike(\'keyword\', $keyword);
 	    }
   
         if ((int) $count === 1) {
