@@ -73,7 +73,7 @@ use Kiri\Annotation\Route\Route;
 use Kiri\Annotation\Route\RequestMethod;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
-use Kiri\Message\Controller;
+use Kiri\Message\Handler\Controller;
 use JetBrains\PhpStorm\ArrayShape;
 use {$model_namespace}\\{$managerName};
 ";
