@@ -1,0 +1,22 @@
+{
+  "name": "game-worker/kiri-gii",
+  "description": "gii",
+  "authors": [
+    {
+      "name": "XiangLin",
+      "email": "as2252258@163.com"
+    }
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=8.0",
+    "composer-runtime-api": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Gii\\": "./"
+     }
+  },
+  "require-dev": {
+  }
+}
