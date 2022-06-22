@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Gii;
 
 
-use Exception;
-use Kiri;
 use Kiri\Abstracts\Providers;
-use Kiri\Application;
+use Kiri\Di\LocalService;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Console\Application;
 
 /**
  * Class DatabasesProviders
@@ -19,16 +20,16 @@ class GiiProviders extends Providers
 
 
 	/**
-	 * @param Application $application
-	 * @throws Exception
+	 * @param LocalService $application
+	 * @return void
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
 	 */
-	public function onImport(Application $application)
+	public function onImport(LocalService $application): void
 	{
 		$application->set('gii', ['class' => Gii::class]);
 
-		$container = Kiri::getDi();
-
-		$console = $container->get(\Symfony\Component\Console\Application::class);
-		$console->add($container->get(GiiCommand::class));
+		$console = $this->container->get(Application::class);
+		$console->add($this->container->get(GiiCommand::class));
 	}
 }
