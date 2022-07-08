@@ -65,13 +65,6 @@ namespace ' . $namespace . ';
 				if (!empty($imports)) {
 					$html .= $imports . PHP_EOL;
 				}
-
-				if (!str_contains($imports, 'Database\Annotation\Set')) {
-					$html .= 'use Database\Annotation\Set;' . PHP_EOL;
-				}
-				if (!str_contains($imports, 'Database\Annotation\Get')) {
-					$html .= 'use Database\Annotation\Get;' . PHP_EOL;
-				}
 			} catch (\Throwable $e) {
 				logger()->addError($e, 'throwable');
 			}
@@ -87,9 +80,6 @@ use Exception;
 use Kiri\Annotation\Target;
 use Kiri\Core\Json;
 use Database\Connection;
-use Database\Annotation\Get;
-use Database\Annotation\Set;
-use Database\Relation;
 use Database\Model;
 ' . PHP_EOL;
 		}
@@ -105,7 +95,7 @@ use Database\Model;
 
 /**
  * Class ' . $managerName . '
- * @package Inter\mysql
+ *
  *' . implode('', $this->visible) . '
  */
 #[Target] class ' . $managerName . ' extends Model
@@ -166,9 +156,11 @@ use Database\Model;
 	 * @return int|bool|string
 	 * @throws Exception
     */
-	#[Set(\'' . $field['Field'] . '\')]
 	public function set' . ucfirst($field['Field']) . 'Attribute($value): int|bool|string
 	{
+		if (empty($value) || is_numeric($value)) {
+			return $value;
+		}
 		if ( !is_string($value) ) {
 			return JSON::encode($value); 
 		}
@@ -181,9 +173,11 @@ use Database\Model;
 	 * @param $value
 	 * @return array|null|bool
 	 */
-	#[Get(\'' . $field['Field'] . '\')]
 	public function get' . ucfirst($field['Field']) . 'Attribute($value): array|null|bool
 	{
+		if (empty($value) || is_numeric($value)) {
+			return $value;
+		}
 		$value = stripcslashes($value);
 		if ( is_string($value) ) {
 			return JSON::decode($value, true); 
