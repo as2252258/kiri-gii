@@ -73,6 +73,8 @@ use Kiri\Annotation\Route\Route;
 use Kiri\Annotation\Route\RequestMethod;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
+use Kiri\Message\Handler\CoreMiddleware;
+use app\Components\Middleware\OAuthMiddleware;
 use Kiri\Message\Handler\Controller;
 use JetBrains\PhpStorm\ArrayShape;
 use {$model_namespace}\\{$managerName};
@@ -181,7 +183,7 @@ use {$model_namespace}\\{$managerName};
 	 * @throws Exception
 	 */
 	#[Route(uri: "' . $_path . '/add", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [])]
+	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
 	public function actionAdd(): string
 	{
 		$model = new ' . $className . '();
@@ -236,7 +238,7 @@ use {$model_namespace}\\{$managerName};
 	 * @throws Exception
 	 */
 	#[Route(uri: "' . $_path . '/update", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [])]
+	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
 	public function actionUpdate(): string
 	{
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
@@ -273,7 +275,7 @@ use {$model_namespace}\\{$managerName};
 	 * @throws Exception
 	 */
 	#[Route(uri: "' . $_path . '/batch-delete", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [])]
+	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
 	public function actionBatchDelete(): string
 	{
 		$_key = $this->request->array(\'ids\');		
@@ -310,7 +312,7 @@ use {$model_namespace}\\{$managerName};
 	 * @throws Exception
 	 */
 	#[Route(uri: "' . $_path . '/detail", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [])]
+	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
     public function actionDetail(): string
     {
         $model = ' . $managerName . '::findOne($this->request->query(\'id\'));
@@ -342,7 +344,7 @@ use {$model_namespace}\\{$managerName};
 	 * @throws Exception
 	 */
 	#[Route(uri: "' . $_path . '/delete", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [])]
+	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
     public function actionDelete(): string
     {
 		$_key = $this->request->int(\'id\', true);
@@ -373,14 +375,13 @@ use {$model_namespace}\\{$managerName};
 
 
 		$_path = ltrim($_path,'/');
-
 		return '
     /**
 	 * @return string
 	 * @throws Exception
 	 */
 	#[Route(uri: "' . $_path . '/list", method: RequestMethod::REQUEST_GET)]
-	#[Middleware(middleware: [])]
+	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
     public function actionList(): string
     {        
         //分页处理
