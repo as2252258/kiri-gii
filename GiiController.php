@@ -391,10 +391,10 @@ use {$model_namespace}\\{$managerName};
 	    } else {
 	        $order = \'id desc\';
 	    }
-	    $getWhere = [];
+	    $pWhere = [];
 	    '.$this->getWhere($fields).'
 	    //列表输出
-	    $model = ' . $managerName . '::query()->orderBy($order);
+	    $model = ' . $managerName . '::query()->where($pWhere)->orderBy($order);
 
 	   	$keyword = $this->request->query(\'keyword\', null); 
 	    if (!empty($keyword)) {
