@@ -38,9 +38,9 @@ class GiiCommand extends Command
 		$this->service = Kiri::getDi()->get(LocalService::class);
 		$this->setName('sw:gii')
 			->addOption('make', 'm', InputArgument::OPTIONAL)
-			->addOption('name', 't', InputArgument::OPTIONAL)
-			->addOption('databases', 'd', InputArgument::OPTIONAL)
-			->setDescription('./snowflake sw:gii make=model|controller|task|interceptor|limits|middleware name=xxxx');
+			->addOption('table', 't', InputArgument::OPTIONAL)
+			->addOption('database', 'd', InputArgument::OPTIONAL)
+			->setDescription('php kiri.php sw:gii --table u_user --database users --make model');
 	}
 
 
@@ -55,7 +55,7 @@ class GiiCommand extends Command
 		try {
 			/** @var Gii $gii */
 			$gii = $this->service->get('gii');
-			if (($db = $input->getOption('databases')) != null) {
+			if (($db = $input->getOption('database')) != null) {
 				$gii->run($this->service->get($db), $input);
 			} else {
 				$action = $input->getOption('make');

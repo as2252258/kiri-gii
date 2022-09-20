@@ -117,8 +117,8 @@ class Gii
 	 */
 	private function makeByDatabases($make, InputInterface $input): array
 	{
-		if ($input->hasOption('name')) {
-			$this->tableName = $input->getOption('name');
+		if ($input->hasOption('table')) {
+			$this->tableName = $input->getOption('table');
 		}
 		return match ($make) {
 			'controller' => $this->getTable(1, 0),
@@ -283,8 +283,8 @@ class Gii
 			if (in_array(strtoupper($_val['Field']), $this->keyword)) {
 				throw new Exception('You can not use keyword "' . $_val['Field'] . '" as field at table "' . $tableName . '"');
 			}
-			array_push($visible, $this->createVisible($_val['Field']));
-			array_push($fields, $_val);
+			$visible[] = $this->createVisible($_val['Field']);
+			$fields[] = $_val;
 			$res[] = $this->createSetFunc($_val['Field'], $_val['Comment']);
 		}
 
