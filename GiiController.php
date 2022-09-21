@@ -110,7 +110,7 @@ use {$model_namespace}\\{$managerName};
 			$html .= $this->getClassMethods($class);
 		}
 
-		$default = ['loadParam', 'actionAdd', 'actionUpdate', 'actionDetail', 'actionDelete', 'actionBatchDelete', 'actionList'];
+		$default = ['loadParam', 'actionAdd', 'actionUpdate', 'actionAuditing', 'actionBatchAuditing', 'actionDetail', 'actionDelete', 'actionBatchDelete', 'actionList'];
 
 		foreach ($default as $key => $val) {
 			if (str_contains($html, ' function ' . $val . '(')) {
@@ -121,6 +121,21 @@ use {$model_namespace}\\{$managerName};
 
 		$html .= '
 }';
+
+		$tableName = str_replace('_', '-', $this->input->getOption('table'));
+
+		Kiri::getLogger()->debug('add Route:');
+		Kiri::getLogger()->debug('
+		Router::group([\'prefix\' => \'' . $tableName . '\'], function () {
+			Router::get(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
+			Router::get(\'list\', \'' . $controllerName . 'Controller@actionList\');
+			Router::post(\'update\', \'' . $controllerName . 'Controller@actionUpdate\');
+			Router::post(\'auditing\', \'' . $controllerName . 'Controller@actionAuditing\');
+			Router::post(\'batch-auditing\', \'' . $controllerName . 'Controller@actionBatchAuditing\');
+			Router::post(\'batch-delete\', \'' . $controllerName . 'Controller@actionBatchDelete\');
+			Router::post(\'delete\', \'' . $controllerName . 'Controller@actionDelete\');
+			Router::post(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
+		});');
 
 		$file = $path['path'] . '/' . $controllerName . 'Controller.php';
 		if (file_exists($file)) {
@@ -175,7 +190,7 @@ use {$model_namespace}\\{$managerName};
 		$_path = str_replace(CONTROLLER_PATH, '', $path['path']);
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
 
-		$_path = ltrim($_path,'/');
+		$_path = ltrim($_path, '/');
 
 		return '
     /**
@@ -189,11 +204,57 @@ use {$model_namespace}\\{$managerName};
 		$model = new ' . $className . '();
 		$model->attributes = $this->loadParam();
 		if (!$model->save()) {
-			return JSON::to(500, $model->getLastError());
+			return Json::to(500, $model->getLastError());
+		} else {
+			return Json::to(0, $model->toArray());		
 		}
-		return JSON::to(0, $model->toArray());
 	}';
 	}
+
+
+	public function controllerMethodAuditing($fields, $className, $object, $path): string
+	{
+		return '
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function actionAuditing(): string
+	{
+		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
+		if (empty($model)) {
+			return Json::to(500, SELECT_IS_NULL);
+		}
+		if (!$model->update([\'state\' => 1])) {
+			return Json::to(500, $model->getLastError());
+		} else {
+			return Json::to(0, $model->toArray());
+		}
+	}';
+	}
+
+
+	public function controllerMethodBatchAuditing($fields, $className, $object, $path): string
+	{
+		return '
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function actionAuditing(): string
+	{
+		$ids = $this->request->array(\'ids\', []);
+		if (empty($ids)) {
+			return JSON::to(404, \'必填项不能为空\');
+		}
+		if (!' . $className . '::query()->whereIn(\'id\', $ids)->update([\'state\' => 1])) {
+			return Json::to(500, \'系统繁忙, 请稍后再试\');
+		} else {
+			return Json::to(0);
+		}
+	}';
+	}
+
 
 	/**
 	 * @param $fields
@@ -230,27 +291,25 @@ use {$model_namespace}\\{$managerName};
 		$_path = str_replace(CONTROLLER_PATH, '', $path['path']);
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
 
-		$_path = ltrim($_path,'/');
+		$_path = ltrim($_path, '/');
 
 		return '
     /**
 	 * @return string
 	 * @throws Exception
 	 */
-	#[Route(uri: "' . $_path . '/update", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
 	public function actionUpdate(): string
 	{
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
 		if (empty($model)) {
-			return JSON::to(500, SELECT_IS_NULL);
+			return Json::to(500, SELECT_IS_NULL);
 		}
 		$model->attributes = $this->loadParam();
-		
 		if (!$model->save()) {
-			return JSON::to(500, $model->getLastError());
+			return Json::to(500, $model->getLastError());
+		} else {
+			return Json::to(0, $model->toArray());		
 		}
-		return JSON::to(0, $model->toArray());
 	}';
 	}
 
@@ -267,27 +326,26 @@ use {$model_namespace}\\{$managerName};
 		$_path = str_replace(CONTROLLER_PATH, '', $path['path']);
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
 
-		$_path = ltrim($_path,'/');
+		$_path = ltrim($_path, '/');
 
 		return '
     /**
 	 * @return string
 	 * @throws Exception
 	 */
-	#[Route(uri: "' . $_path . '/batch-delete", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
 	public function actionBatchDelete(): string
 	{
 		$_key = $this->request->array(\'ids\');		
 		if (empty($_key)) {
-			return JSON::to(500, PARAMS_IS_NULL);
+			return Json::to(500, PARAMS_IS_NULL);
 		}
 		
 		$model = ' . $className . '::query()->whereIn(\'id\', $_key);
 		if (!$model->delete()) {
-			return JSON::to(500, DB_ERROR_BUSY);
+			return Json::to(500, DB_ERROR_BUSY);
+        } else {
+            return Json::to(0, $_key);        
         }
-        return JSON::to(0, $_key);
 	}';
 	}
 
@@ -304,22 +362,21 @@ use {$model_namespace}\\{$managerName};
 		$_path = str_replace(CONTROLLER_PATH, '', $path['path']);
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
 
-		$_path = ltrim($_path,'/');
+		$_path = ltrim($_path, '/');
 
 		return '
     /**
 	 * @return string
 	 * @throws Exception
 	 */
-	#[Route(uri: "' . $_path . '/detail", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
     public function actionDetail(): string
     {
         $model = ' . $managerName . '::findOne($this->request->query(\'id\'));
         if (empty($model)) {
-            return JSON::to(404, SELECT_IS_NULL);
+            return Json::to(404, SELECT_IS_NULL);
+        } else {
+            return Json::to(0, $model->toArray());
         }
-        return JSON::to(0, $model->toArray());
     }';
 	}
 
@@ -336,27 +393,26 @@ use {$model_namespace}\\{$managerName};
 		$_path = str_replace(CONTROLLER_PATH, '', $path['path']);
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
 
-		$_path = ltrim($_path,'/');
+		$_path = ltrim($_path, '/');
 
 		return '
     /**
 	 * @return string
 	 * @throws Exception
 	 */
-	#[Route(uri: "' . $_path . '/delete", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
     public function actionDelete(): string
     {
 		$_key = $this->request->int(\'id\', true);
 		
 		$model = ' . $managerName . '::findOne($_key);
 		if (empty($model)) {
-			return JSON::to(500, SELECT_IS_NULL);
+			return Json::to(500, SELECT_IS_NULL);
 		}
         if (!$model->delete()) {
-			return JSON::to(500, $model->getLastError());
+			return Json::to(500, $model->getLastError());
+        } else {
+            return Json::to(0);        
         }
-        return JSON::to(0);
     }';
 	}
 
@@ -374,14 +430,12 @@ use {$model_namespace}\\{$managerName};
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
 
 
-		$_path = ltrim($_path,'/');
+		$_path = ltrim($_path, '/');
 		return '
     /**
 	 * @return string
 	 * @throws Exception
 	 */
-	#[Route(uri: "' . $_path . '/list", method: RequestMethod::REQUEST_GET)]
-	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
     public function actionList(): string
     {        
         //分页处理
@@ -393,7 +447,7 @@ use {$model_namespace}\\{$managerName};
 	        $order = \'id desc\';
 	    }
 	    $pWhere = [];
-	    '.$this->getWhere($fields).'
+	    ' . $this->getWhere($fields) . '
 	    //列表输出
 	    $model = ' . $managerName . '::query()->where($pWhere)->orderBy($order);
 
@@ -411,7 +465,7 @@ use {$model_namespace}\\{$managerName};
 	    
 		$data = $model->all()->toArray();
 		
-        return JSON::to(0, $data, $count);
+        return Json::to(0, $data, $count);
     }
     ';
 	}
