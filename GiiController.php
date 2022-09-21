@@ -127,14 +127,14 @@ use {$model_namespace}\\{$managerName};
 		Kiri::getLogger()->debug('add Route:');
 		Kiri::getLogger()->debug('
 		Router::group([\'prefix\' => \'' . $tableName . '\'], function () {
-			Router::get(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
+			Router::post(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
 			Router::get(\'list\', \'' . $controllerName . 'Controller@actionList\');
 			Router::post(\'update\', \'' . $controllerName . 'Controller@actionUpdate\');
 			Router::post(\'auditing\', \'' . $controllerName . 'Controller@actionAuditing\');
 			Router::post(\'batch-auditing\', \'' . $controllerName . 'Controller@actionBatchAuditing\');
 			Router::post(\'batch-delete\', \'' . $controllerName . 'Controller@actionBatchDelete\');
 			Router::post(\'delete\', \'' . $controllerName . 'Controller@actionDelete\');
-			Router::post(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
+			Router::get(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
 		});');
 
 		$file = $path['path'] . '/' . $controllerName . 'Controller.php';
