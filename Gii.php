@@ -28,11 +28,11 @@ class Gii
 
 	private InputInterface $input;
 
-	public string $modelPath = APP_PATH . 'models/';
-	public string $modelNamespace = 'app\Model\\';
+	public string $modelPath = APP_PATH . 'app/Model/';
+	public string $modelNamespace = 'App\Model\\';
 
-	public string $controllerPath = APP_PATH . 'controllers/';
-	public string $controllerNamespace = 'app\\Controller\\';
+	public string $controllerPath = APP_PATH . 'app/Controller/';
+	public string $controllerNamespace = 'App\\Controller\\';
 
 
 	public static array $createSqls = [];
