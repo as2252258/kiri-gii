@@ -74,7 +74,7 @@ use Kiri\Annotation\Route\RequestMethod;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
 use Kiri\Message\Handler\CoreMiddleware;
-use app\Components\Middleware\OAuthMiddleware;
+use Components\Middleware\OAuthMiddleware;
 use Kiri\Message\Handler\Controller;
 use JetBrains\PhpStorm\ArrayShape;
 use {$model_namespace}\\{$managerName};
@@ -241,7 +241,7 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	public function actionAuditing(): string
+	public function actionBatchAuditing(): string
 	{
 		$ids = $this->request->array(\'ids\', []);
 		if (empty($ids)) {
