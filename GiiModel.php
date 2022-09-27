@@ -178,7 +178,6 @@ use Database\Model;
 		if (empty($value) || is_numeric($value)) {
 			return $value;
 		}
-		$value = stripcslashes($value);
 		if ( is_string($value) ) {
 			return JSON::decode($value, true); 
 		}
