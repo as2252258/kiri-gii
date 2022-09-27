@@ -197,8 +197,6 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	#[Route(uri: "' . $_path . '/add", method: RequestMethod::REQUEST_POST)]
-	#[Middleware(middleware: [CoreMiddleware::class, OAuthMiddleware::class])]
 	public function actionAdd(): string
 	{
 		$model = new ' . $className . '();
