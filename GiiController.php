@@ -26,10 +26,11 @@ class GiiController extends GiiBase
 	 * @param $className
 	 * @param $fields
 	 */
-	public function __construct($className, $fields)
+	public function __construct($className, $fields, $tableName)
 	{
 		$this->className = $className;
 		$this->fields = $fields;
+		$this->tableName = $tableName;
 	}
 
 
@@ -122,20 +123,36 @@ use {$model_namespace}\\{$managerName};
 		$html .= '
 }';
 
-		$tableName = str_replace('_', '-', $this->input->getOption('table'));
+		$file = APP_PATH . 'routes/' . $this->input->getOption('database') . '.php';
+		if (!file_exists($file)) {
+			touch($file);
+			file_put_contents($file, '<?php' . PHP_EOL);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, 'use Kiri\Message\Handler\Router;' . PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+		}
 
-		Kiri::getLogger()->debug('add Route:');
-		Kiri::getLogger()->debug('
-		Router::group([\'prefix\' => \'' . $tableName . '\'], function () {
-			Router::post(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
-			Router::get(\'list\', \'' . $controllerName . 'Controller@actionList\');
-			Router::post(\'update\', \'' . $controllerName . 'Controller@actionUpdate\');
-			Router::post(\'auditing\', \'' . $controllerName . 'Controller@actionAuditing\');
-			Router::post(\'batch-auditing\', \'' . $controllerName . 'Controller@actionBatchAuditing\');
-			Router::post(\'batch-delete\', \'' . $controllerName . 'Controller@actionBatchDelete\');
-			Router::post(\'delete\', \'' . $controllerName . 'Controller@actionDelete\');
-			Router::get(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
-		});');
+		$tableName = str_replace($this->db->tablePrefix, '', $this->tableName);
+		$tableName = str_replace('_', '-', $tableName);
+
+		$addRouter = 'Router::group([\'prefix\' => \'' . $tableName . '\',\'namespace\' => \''.$namespace.'\'], function () {
+	Router::post(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
+	Router::get(\'list\', \'' . $controllerName . 'Controller@actionList\');
+	Router::post(\'update\', \'' . $controllerName . 'Controller@actionUpdate\');
+	Router::post(\'auditing\', \'' . $controllerName . 'Controller@actionAuditing\');
+	Router::post(\'batch-auditing\', \'' . $controllerName . 'Controller@actionBatchAuditing\');
+	Router::post(\'batch-delete\', \'' . $controllerName . 'Controller@actionBatchDelete\');
+	Router::post(\'delete\', \'' . $controllerName . 'Controller@actionDelete\');
+	Router::get(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
+});
+';
+		if (!str_contains(preg_replace('/\s/ixm', '', file_get_contents($file)), preg_replace('/\s/ixm', '', $addRouter))) {
+			file_put_contents($file, $addRouter, FILE_APPEND);
+		}
 
 		$file = $path['path'] . '/' . $controllerName . 'Controller.php';
 		if (file_exists($file)) {

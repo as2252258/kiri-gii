@@ -180,7 +180,7 @@ class Gii
 	 */
 	private function generateController(array $data): string
 	{
-		$controller = new GiiController($data['classFileName'], $data['fields']);
+		$controller = new GiiController($data['classFileName'], $data['fields'], $data['tableName']);
 		$controller->setConnection($this->db);
 		$controller->setModelPath($this->modelPath);
 		$controller->setInput($this->input);
