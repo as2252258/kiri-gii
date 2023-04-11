@@ -473,7 +473,7 @@ use {$model_namespace}\\{$managerName};
 		    $count = $model->count();
 	    }
 	    if ($count != -100) {
-		    $model->limit($this->request->offset() ,$this->request->size());
+		    $model->offset($this->request->offset())->limit($this->request->size());
 	    }
 	    
 		$data = $model->all()->toArray();
