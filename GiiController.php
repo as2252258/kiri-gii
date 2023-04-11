@@ -129,9 +129,7 @@ use {$model_namespace}\\{$managerName};
 			file_put_contents($file, '<?php' . PHP_EOL);
 			file_put_contents($file, PHP_EOL, FILE_APPEND);
 			file_put_contents($file, PHP_EOL, FILE_APPEND);
-			file_put_contents($file, PHP_EOL, FILE_APPEND);
 			file_put_contents($file, 'use Kiri\Message\Handler\Router;' . PHP_EOL, FILE_APPEND);
-			file_put_contents($file, PHP_EOL, FILE_APPEND);
 			file_put_contents($file, PHP_EOL, FILE_APPEND);
 			file_put_contents($file, PHP_EOL, FILE_APPEND);
 		}
@@ -139,7 +137,7 @@ use {$model_namespace}\\{$managerName};
 		$tableName = str_replace($this->db->tablePrefix, '', $this->tableName);
 		$tableName = str_replace('_', '-', $tableName);
 
-		$addRouter = 'Router::group([\'prefix\' => \'' . $tableName . '\',\'namespace\' => \''.$namespace.'\'], function () {
+		$addRouter = 'Router::group([\'prefix\' => \'' . $tableName . '\',\'namespace\' => \'' . $namespace . '\'], function () {
 	Router::post(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
 	Router::get(\'list\', \'' . $controllerName . 'Controller@actionList\');
 	Router::post(\'update\', \'' . $controllerName . 'Controller@actionUpdate\');
@@ -150,7 +148,7 @@ use {$model_namespace}\\{$managerName};
 	Router::get(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
 });
 ';
-		if (!str_contains(preg_replace('/\s/ixm', '', file_get_contents($file)), preg_replace('/\s/ixm', '', $addRouter))) {
+		if (!str_contains($this->clearBlank(file_get_contents($file)), $this->clearBlank($addRouter))) {
 			file_put_contents($file, $addRouter, FILE_APPEND);
 		}
 

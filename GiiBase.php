@@ -64,6 +64,16 @@ abstract class GiiBase
 		$this->modelNamespace = $modelNamespace;
 	}
 
+
+	/**
+	 * @param string $content
+	 * @return string
+	 */
+	protected function clearBlank(string $content): string
+	{
+		return preg_replace('/\s/ixm', '', $content);
+	}
+
 	/**
 	 * @param string $controllerPath
 	 */
