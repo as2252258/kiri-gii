@@ -152,19 +152,13 @@ use Database\Model;
 			if ($field['Type'] === 'json') {
 				$function = '
 	/**
-	 * @param $value
+	 * @param string|null $value
 	 * @return int|bool|string
 	 * @throws Exception
     */
-	public function set' . ucfirst($field['Field']) . 'Attribute($value): int|bool|string
+	public function set' . ucfirst($field['Field']) . 'Attribute(?array $value): int|bool|string
 	{
-		if (empty($value) || is_numeric($value)) {
-			return $value;
-		}
-		if ( !is_string($value) ) {
-			return JSON::encode($value); 
-		}
-		return $value;
+		return \json_encode($value, JSON_UNESCAPED_UNICODE); 
 	}
 	';
 
@@ -173,15 +167,9 @@ use Database\Model;
 	 * @param $value
 	 * @return array|null|bool
 	 */
-	public function get' . ucfirst($field['Field']) . 'Attribute($value): array|null|bool
+	public function get' . ucfirst($field['Field']) . 'Attribute(?string $value): array|null|bool
 	{
-		if (empty($value) || is_numeric($value)) {
-			return $value;
-		}
-		if ( is_string($value) ) {
-			return JSON::decode($value, true); 
-		}
-		return $value;
+		return \json_decode($value, true); 
 	}
 	';
 
@@ -344,7 +332,7 @@ use Database\Model;
 		foreach ($val as $_key => $_val) {
 			if ($_val['Extra'] == 'auto_increment') continue;
 			if ($_val['Key'] == 'PRI' || $_val['Key'] == 'UNI' || $this->checkIsRequired($_val) === 'true') {
-				array_push($data, $_val['Field']);
+				$data[] = $_val['Field'];
 			}
 		}
 		if (empty($data)) {
