@@ -55,7 +55,7 @@ class GiiModel extends GiiBase
 			try {
 				$className = str_replace('\\\\', '\\', "{$modelPath['namespace']}\\{$managerName}");
 
-				$class = Kiri::getDi()->getReflect($className);
+				$class = Kiri::getDi()->getReflectionClass($className);
 
 				$html = '<?php
 namespace ' . $namespace . ';
