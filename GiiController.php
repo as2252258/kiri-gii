@@ -6,6 +6,7 @@ namespace Gii;
 
 use Exception;
 use Kiri;
+use Kiri\ToArray;
 use ReflectionException;
 use function logger;
 
@@ -57,14 +58,14 @@ namespace {$namespace};
 
 ";
 		if (file_exists($path['path'] . '/' . $managerName . 'Controller.php')) {
-			try {
-				$class = new \ReflectionClass($controller);
-
-				$import = $this->getImports($path['path'] . '/' . $managerName . 'Controller.php', $class);
-			} catch (\Throwable $Exception) {
-				logger()->addError($Exception, 'throwable');
-				exit();
-			}
+//			try {
+//				$class = new \ReflectionClass($controller);
+//
+//				$import = $this->getImports($path['path'] . '/' . $managerName . 'Controller.php', $class);
+//			} catch (\Throwable $Exception) {
+//				logger()->addError($Exception, 'throwable');
+//				exit();
+//			}
 		} else {
 			$import = "use Kiri;
 use Exception;
@@ -77,8 +78,11 @@ use Kiri\Core\Json;
 use Kiri\Message\Handler\CoreMiddleware;
 use Components\Middleware\OAuthMiddleware;
 use Kiri\Message\Handler\Controller;
-use JetBrains\PhpStorm\ArrayShape;
 use {$model_namespace}\\{$managerName};
+use Kiri\Router\Validator\BindForm;
+use Kiri\Router\Validator\Validator;
+use Psr\Http\Message\ResponseInterface;
+
 ";
 		}
 		if (!empty($import)) {
@@ -111,7 +115,7 @@ use {$model_namespace}\\{$managerName};
 			$html .= $this->getClassMethods($class);
 		}
 
-		$default = ['loadParam', 'actionAdd', 'actionUpdate', 'actionAuditing', 'actionBatchAuditing', 'actionDetail', 'actionDelete', 'actionBatchDelete', 'actionList'];
+		$default = ['actionAdd', 'actionUpdate', 'actionAuditing', 'actionBatchAuditing', 'actionDetail', 'actionDelete', 'actionBatchDelete', 'actionList'];
 
 		foreach ($default as $key => $val) {
 			if (str_contains($html, ' function ' . $val . '(')) {
@@ -125,13 +129,13 @@ use {$model_namespace}\\{$managerName};
 
 		$file = APP_PATH . 'routes/' . $this->input->getOption('database') . '.php';
 		if (!file_exists($file)) {
-			touch($file);
-			file_put_contents($file, '<?php' . PHP_EOL);
-			file_put_contents($file, PHP_EOL, FILE_APPEND);
-			file_put_contents($file, PHP_EOL, FILE_APPEND);
-			file_put_contents($file, 'use Kiri\Message\Handler\Router;' . PHP_EOL, FILE_APPEND);
-			file_put_contents($file, PHP_EOL, FILE_APPEND);
-			file_put_contents($file, PHP_EOL, FILE_APPEND);
+//			touch($file);
+//			file_put_contents($file, '<?php' . PHP_EOL);
+//			file_put_contents($file, PHP_EOL, FILE_APPEND);
+//			file_put_contents($file, PHP_EOL, FILE_APPEND);
+//			file_put_contents($file, 'use Kiri\Message\Handler\Router;' . PHP_EOL, FILE_APPEND);
+//			file_put_contents($file, PHP_EOL, FILE_APPEND);
+//			file_put_contents($file, PHP_EOL, FILE_APPEND);
 		}
 
 		$tableName = str_replace($this->db->tablePrefix, '', $this->tableName);
@@ -149,15 +153,15 @@ use {$model_namespace}\\{$managerName};
 });
 ';
 		if (!str_contains($this->clearBlank(file_get_contents($file)), $this->clearBlank($addRouter))) {
-			file_put_contents($file, $addRouter, FILE_APPEND);
+//			file_put_contents($file, $addRouter, FILE_APPEND);
 		}
 
 		$file = $path['path'] . '/' . $controllerName . 'Controller.php';
 		if (file_exists($file)) {
-			unlink($file);
+//			unlink($file);
 		}
 
-		Kiri::writeFile($file, $html);
+//		Kiri::writeFile($file, $html);
 		return $controllerName . 'Controller.php';
 	}
 
@@ -212,14 +216,17 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	public function actionAdd(): string
+	public function actionAdd(#[BindForm(' . $className . 'Form::class)] Validator $form): ResponseInterface
 	{
+		if (!$form->run($this->request)) {
+			return $this->response->json([\'code\' => 500, \'message\' => $form->error()]);
+		}
 		$model = new ' . $className . '();
-		$model->attributes = $this->loadParam();
+		$model->attributes = $' . lcfirst($className) . 'Form->getFormData()->toArray();
 		if (!$model->save()) {
-			return Json::to(500, $model->getLastError());
+			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
-			return Json::to(0, $model->toArray());		
+			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
 		}
 	}';
 	}
@@ -232,16 +239,16 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	public function actionAuditing(): string
+	public function actionAuditing(): ResponseInterface
 	{
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
 		if (empty($model)) {
-			return Json::to(500, SELECT_IS_NULL);
+			return $this->response->json([\'code\' => 500, \'message\' => \'必填项不能为空\']);
 		}
 		if (!$model->update([\'state\' => 1])) {
-			return Json::to(500, $model->getLastError());
+			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
-			return Json::to(0, $model->toArray());
+			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
 		}
 	}';
 	}
@@ -254,42 +261,20 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	public function actionBatchAuditing(): string
+	public function actionBatchAuditing(): ResponseInterface
 	{
-		$ids = $this->request->array(\'ids\', []);
+		$ids = $this->request->post(\'ids\', []);
 		if (empty($ids)) {
-			return JSON::to(404, \'必填项不能为空\');
+			return $this->response->json([\'code\' => 500, \'message\' => \'必填项不能为空\']);
 		}
 		if (!' . $className . '::query()->whereIn(\'id\', $ids)->update([\'state\' => 1])) {
-			return Json::to(500, \'系统繁忙, 请稍后再试\');
+			return $this->response->json([\'code\' => 500, \'message\' => \'系统繁忙, 请稍后再试\']);
 		} else {
-			return Json::to(0);
+			return $this->response->json([\'code\' => 0, \'message\' => \'ok\']);
 		}
 	}';
 	}
 
-
-	/**
-	 * @param $fields
-	 * @param $className
-	 * @param null $object
-	 * @return string
-	 * 通用
-	 */
-	public function controllerMethodLoadParam($fields, $className, $object = NULL): string
-	{
-		return '
-	/**
-	 * @return array
-	 * @throws Exception
-	 */
-	#[ArrayShape([])]
-	private function loadParam(): array
-	{
-		return [' . $this->getData($fields) . '
-		];
-	}';
-	}
 
 	/**
 	 * @param $fields
@@ -311,17 +296,20 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	public function actionUpdate(): string
+	public function actionUpdate(#[BindForm(' . $className . 'Form::class)] Validator $form): ResponseInterface
 	{
+		if (!$form->run($this->request)) {
+			return $this->response->json([\'code\' => 500, \'message\' => $form->error()]);
+		}
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
 		if (empty($model)) {
-			return Json::to(500, SELECT_IS_NULL);
+			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
 		}
 		$model->attributes = $this->loadParam();
 		if (!$model->save()) {
-			return Json::to(500, $model->getLastError());
+			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
-			return Json::to(0, $model->toArray());		
+			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
 		}
 	}';
 	}
@@ -346,18 +334,18 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-	public function actionBatchDelete(): string
+	public function actionBatchDelete(): ResponseInterface
 	{
 		$_key = $this->request->array(\'ids\');		
 		if (empty($_key)) {
-			return Json::to(500, PARAMS_IS_NULL);
+			return $this->response->json([\'code\' => 500, \'message\' => PARAMS_IS_NULL]);
 		}
 		
 		$model = ' . $className . '::query()->whereIn(\'id\', $_key);
 		if (!$model->delete()) {
-			return Json::to(500, DB_ERROR_BUSY);
-        } else {
-            return Json::to(0, $_key);        
+			return $this->response->json([\'code\' => 500, \'message\' => DB_ERROR_BUSY]);
+		} else {
+			return $this->response->json([\'code\' => 0, \'data\' => $_key]);		
         }
 	}';
 	}
@@ -382,13 +370,13 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-    public function actionDetail(): string
+    public function actionDetail(): ResponseInterface
     {
         $model = ' . $managerName . '::findOne($this->request->query(\'id\'));
         if (empty($model)) {
-            return Json::to(404, SELECT_IS_NULL);
-        } else {
-            return Json::to(0, $model->toArray());
+			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
+		} else {
+			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
         }
     }';
 	}
@@ -413,18 +401,18 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-    public function actionDelete(): string
+    public function actionDelete(): ResponseInterface
     {
 		$_key = $this->request->int(\'id\', true);
 		
 		$model = ' . $managerName . '::findOne($_key);
 		if (empty($model)) {
-			return Json::to(500, SELECT_IS_NULL);
+			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
 		}
         if (!$model->delete()) {
-			return Json::to(500, $model->getLastError());
-        } else {
-            return Json::to(0);        
+			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
+		} else {
+			return $this->response->json([\'code\' => 0, \'message\' => \'ok\']);		
         }
     }';
 	}
@@ -449,7 +437,7 @@ use {$model_namespace}\\{$managerName};
 	 * @return string
 	 * @throws Exception
 	 */
-    public function actionList(): string
+    public function actionList(): ResponseInterface
     {        
         //分页处理
 	    $count   = $this->request->query(\'count\', -1);
@@ -472,82 +460,183 @@ use {$model_namespace}\\{$managerName};
         if ((int) $count === 1) {
 		    $count = $model->count();
 	    }
+	    
+	    [$offset, $size] = $this->getPageInfo();
 	    if ($count != -100) {
-		    $model->offset($this->request->offset())->limit($this->request->size());
+		    $model->offset($offset)->limit($size);
 	    }
 	    
 		$data = $model->all()->toArray();
 		
-        return Json::to(0, $data, $count);
+		return $this->response->json([\'code\' => 0, \'data\' => $data, \'count\' => $count]);
     }
     ';
 	}
 
-	private function getData($fields): string
+
+	private function getData($formClass, $fields): string
 	{
 		$html = '';
 
 		$length = $this->getMaxLength($fields);
 
-
+		$class = '';
+		$header = [];
+		$toArray = [];
 		foreach ($fields as $key => $val) {
-			preg_match('/\((\d+)(,(\d+))*\)/', $val['Type'], $number);
-			$type = strtolower(preg_replace('/\(\d+(,\d+)*\)/', '', $val['Type']));
+			if (str_starts_with($val['Type'], 'enum')) {
+				preg_match('/\(.*\)/', $val['Type'], $number);
+				$number[0] = trim($number[0], '()');
 
-			$first = preg_replace('/\s+\w+/', '', $type);
-			if ($val['Field'] == 'id') continue;
+				$values = explode(',', $number[0]);
+				$number[1] = 0;
+				foreach ($values as $evalue) {
+					$evalue = trim($evalue, '\'');
+
+					$leng = mb_strlen($evalue);
+					if ($number[1] < $leng) {
+						$number[1] = $leng;
+					}
+				}
+
+				$type = strtolower(preg_replace('/\(\'\w+\'(,\'\w+\')*\)/', '', $val['Type']));
+
+				$first = preg_replace('/\s+\w+/', '', $type);
+			} else {
+				preg_match('/\((\d+)(,(\d+))*\)/', $val['Type'], $number);
+				$type = strtolower(preg_replace('/\(\d+(,\d+)*\)/', '', $val['Type']));
+
+				$first = preg_replace('/\s+\w+/', '', $type);
+			}
+
+			if ($val['Extra'] == 'auto_increment') continue;
 			if ($type == 'timestamp') continue;
 			$_field = [];
 			$_field['required'] = $this->checkIsRequired($val);
 			foreach ($this->type as $_key => $value) {
 				if (!in_array(strtolower($first), $value)) continue;
-				$comment = '//' . $val['Comment'];
+				$comment = $val['Comment'];
 				$_field['type'] = $_key;
 
+				$toArray[] = '
+			\'' . str_pad($val['Field'] . '\'', $length, ' ', STR_PAD_RIGHT) . ' => $this->' . $val['Field'] . ',';
 				if ($type == 'date' || $type == 'datetime' || $type == 'time') {
-					$_tps = match ($type) {
-						'date' => '$this->request->' . $_key . '(\'' . $val['Field'] . '\', date(\'Y-m-d\'))',
-						'time' => '$this->request->' . $_key . '(\'' . $val['Field'] . '\', date(\'H:i:s\'))',
-						default => '$this->request->' . $_key . '(\'' . $val['Field'] . '\', date(\'Y-m-d H:i:s\'))',
+					if (!in_array('use Kiri\Router\Validator\Inject\Length;', $header)) {
+						$header[] = 'use Kiri\Router\Validator\Inject\Length;';
+					}
+					$class .= match ($type) {
+						'date' => '
+	/**
+	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
+	 */
+	#[Length(10)]
+	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+
+',
+						'time' => '
+	/**
+	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
+	 */
+	#[Length(5)]
+	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+
+',
+						default => '
+	/**
+	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
+	 */
+	#[Length(16)]
+	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+
+',
 					};
-					$html .= '
-            \'' . str_pad($val['Field'] . '\'', $length, ' ', STR_PAD_RIGHT) . ' => ' . str_pad($_tps . ',', 60, ' ', STR_PAD_RIGHT) . $comment;
 				} else {
-					$tmp = 'null';
 					if (isset($number[0])) {
 						if (strpos(',', $number[0])) {
-							$tmp = '[' . $number[1] . ',' . $number[3] . ']';
 							$_field['min'] = $number[1];
 							$_field['max'] = $number[3];
 						} else {
-							$tmp = '[0,' . $number[1] . ']';
 							$_field['min'] = 0;
 							$_field['max'] = $number[1];
 						}
 					}
-					if ($key == 'string') {
-						$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', ' . $_field['required'] . ', ' . $tmp . ')';
-					} else if ($type == 'int') {
-						if ($number[0] == 10) {
-							$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', time())';
-						} else {
-							$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', ' . $_field['required'] . ')';
-						}
-					} else if ($type == 'float') {
-						$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', ' . $_field['required'] . ', ' . ($number[3] ?? '2') . ')';
-					} else if ($key == 'email') {
-						$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', ' . $_field['required'] . ')';
-					} else if ($key == 'timestamp') {
-						$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', time())';
-					} else {
-						$_tps = '$this->request->' . $_key . '(\'' . $val['Field'] . '\', ' . $_field['required'] . ')';
+					if ($type == 'enum' && !in_array('use Kiri\Router\Validator\Inject\In;', $header)) {
+						$header[] = 'use Kiri\Router\Validator\Inject\In;';
 					}
-					$html .= '
-            \'' . str_pad($val['Field'] . '\'', $length, ' ', STR_PAD_RIGHT) . ' => ' . str_pad($_tps . ',', 60, ' ', STR_PAD_RIGHT) . $comment;
+					if ($_field['required'] == 'true' && !in_array('use Kiri\Router\Validator\Inject\Required;', $header)) {
+						$header[] = 'use Kiri\Router\Validator\Inject\Required;';
+					}
+					if (!in_array('use Kiri\Router\Validator\Inject\MaxLength;', $header)) {
+						$header[] = 'use Kiri\Router\Validator\Inject\MaxLength;';
+					}
+					$class .= '
+	/**
+	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
+	 */' . ($type == 'enum' ? '
+	#[In([' . $number[0] . '])]' : '') . '' . ($_field['required'] == 'true' ? '
+	#[Required]' : '') . '
+	#[MaxLength(' . $number[1] . ')]
+	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+
+';
 				}
 			}
 			$this->rules[$val['Field']] = $_field;
 		}
+		if (!is_dir($_SERVER['PWD'] . '/app/Form/')) {
+			mkdir($_SERVER['PWD'] . '/app/Form/');
+		}
+		if (!file_exists($_SERVER['PWD'] . '/app/Form/' . $formClass . 'Form.php')) {
+			touch($_SERVER['PWD'] . '/app/Form/' . $formClass . 'Form.php');
+		}
+		file_put_contents($_SERVER['PWD'] . '/app/Form/' . $formClass . 'Form.php', '<?php 
+
+namespace App\Form;
+
+use Kiri\ToArray;
+' . implode(PHP_EOL, $header) . PHP_EOL . PHP_EOL . '
+/**
+ * FormData
+ */
+class ' . $formClass . 'Form implements ToArray, \JsonSerializable, \Stringable
+{
+
+' . $class . '
+
+	/**
+	 * @return bool|string
+	 */
+	public function jsonSerialize(): bool|string
+	{
+		// TODO: Implement jsonSerialize() method.
+		return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
+	}
+	
+	
+	/**
+	 * @return string
+	 */
+	public function __toString(): string
+	{
+		// TODO: Implement __toString() method.
+		$json = $this->jsonSerialize();
+		if (!$json) {
+			return \'\';
+		}
+		return $json;
+	}
+	
+
+	/**
+	 * @return array
+	 */
+	public function toArray(): array
+	{
+		return [' . implode($toArray) . '
+		];
+	}
+
+}');
 		return $html;
 	}
 
