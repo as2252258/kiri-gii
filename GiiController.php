@@ -589,6 +589,7 @@ use Kiri\Router\Annotate\AutoController;
 			$this->rules[$val['Field']] = $_field;
 		}
 
+		$namespace = str_replace('Controller', 'Form', $path['namespace']);
 		$path = str_replace('Controller', 'Form', $path['path']);
 		if (!is_dir($_SERVER['PWD'] . '/app/Form/')) {
 			mkdir($_SERVER['PWD'] . '/app/Form/');
@@ -601,7 +602,7 @@ use Kiri\Router\Annotate\AutoController;
 		}
 		file_put_contents($path . '/' . $formClass . 'Form.php', '<?php 
 
-namespace App\Form;
+namespace ' . $namespace . ';
 
 use Kiri\ToArray;
 ' . implode(PHP_EOL, $header) . PHP_EOL . PHP_EOL . '
