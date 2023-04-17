@@ -67,21 +67,15 @@ namespace {$namespace};
 				exit();
 			}
 		} else {
-			$import = "use Kiri;
-use Exception;
-use Kiri\Annotation\Target;
-use Kiri\Annotation\Route\Middleware;
-use Kiri\Annotation\Route\Route;
-use Kiri\Annotation\Route\RequestMethod;
+			$import = "use Exception;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
-use Kiri\Message\Handler\CoreMiddleware;
-use Components\Middleware\OAuthMiddleware;
-use Kiri\Message\Handler\Controller;
+use Kiri\Router\Base\Controller;
 use {$model_namespace}\\{$managerName};
 use Kiri\Router\Validator\BindForm;
 use Kiri\Router\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
+use Kiri\Router\Annotate\AutoController;
 
 ";
 		}
@@ -103,7 +97,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @package controller
  */
-#[Target] class {$controllerName}Controller extends Controller
+#[AutoController] class {$controllerName}Controller extends Controller
 {
 
 ";
@@ -211,9 +205,11 @@ use Psr\Http\Message\ResponseInterface;
 
 		$_path = ltrim($_path, '/');
 
+		$this->getData($className, $fields);
+
 		return '
     /**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
 	public function actionAdd(#[BindForm(' . $className . 'Form::class)] Validator $form): ResponseInterface
@@ -222,7 +218,7 @@ use Psr\Http\Message\ResponseInterface;
 			return $this->response->json([\'code\' => 500, \'message\' => $form->error()]);
 		}
 		$model = new ' . $className . '();
-		$model->attributes = $' . lcfirst($className) . 'Form->getFormData()->toArray();
+		$model->attributes = $form->getFormData()->toArray();
 		if (!$model->save()) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
@@ -236,7 +232,7 @@ use Psr\Http\Message\ResponseInterface;
 	{
 		return '
 	/**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
 	public function actionAuditing(): ResponseInterface
@@ -258,7 +254,7 @@ use Psr\Http\Message\ResponseInterface;
 	{
 		return '
 	/**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
 	public function actionBatchAuditing(): ResponseInterface
@@ -293,7 +289,7 @@ use Psr\Http\Message\ResponseInterface;
 
 		return '
     /**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
 	public function actionUpdate(#[BindForm(' . $className . 'Form::class)] Validator $form): ResponseInterface
@@ -305,7 +301,7 @@ use Psr\Http\Message\ResponseInterface;
 		if (empty($model)) {
 			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
 		}
-		$model->attributes = $this->loadParam();
+		$model->attributes = $form->getFormData()->toArray();
 		if (!$model->save()) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
@@ -331,7 +327,7 @@ use Psr\Http\Message\ResponseInterface;
 
 		return '
     /**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
 	public function actionBatchDelete(): ResponseInterface
@@ -367,7 +363,7 @@ use Psr\Http\Message\ResponseInterface;
 
 		return '
     /**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
     public function actionDetail(): ResponseInterface
@@ -398,7 +394,7 @@ use Psr\Http\Message\ResponseInterface;
 
 		return '
     /**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
     public function actionDelete(): ResponseInterface
@@ -434,7 +430,7 @@ use Psr\Http\Message\ResponseInterface;
 		$_path = ltrim($_path, '/');
 		return '
     /**
-	 * @return string
+	 * @return ResponseInterface
 	 * @throws Exception
 	 */
     public function actionList(): ResponseInterface
