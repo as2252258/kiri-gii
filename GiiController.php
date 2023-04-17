@@ -571,7 +571,7 @@ use Kiri\Router\Annotate\AutoController;
 	 */' . ($type == 'enum' ? '
 	#[In([' . $number[0] . '])]' : '') . '' . ($_field['required'] == 'true' ? '
 	#[Required]' : '') . '
-	#[MaxLength(' . $number[1] . ')]
+	#[MaxLength(' . ($number[1] ?? 0) . ')]
 	public ?' . $_key . ' $' . $val['Field'] . ' = null;
 
 ';
