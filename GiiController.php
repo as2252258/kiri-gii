@@ -68,7 +68,7 @@ namespace {$namespace};
 			}
 		} else {
 			$import = "use Exception;
-use App\Form\{$managerName}Form;
+use App\Form\\{$managerName}Form;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
 use Kiri\Router\Base\Controller;
