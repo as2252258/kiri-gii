@@ -206,7 +206,7 @@ use Kiri\Router\Annotate\AutoController;
 
 		$_path = ltrim($_path, '/');
 
-		$this->getData($className, $fields);
+		$this->getData($path, $className, $fields);
 
 		return '
     /**
@@ -471,7 +471,7 @@ use Kiri\Router\Annotate\AutoController;
 	}
 
 
-	private function getData($formClass, $fields): string
+	private function getData($path, $formClass, $fields): string
 	{
 		$html = '';
 
@@ -588,13 +588,18 @@ use Kiri\Router\Annotate\AutoController;
 			}
 			$this->rules[$val['Field']] = $_field;
 		}
+
+		$path = str_replace('Controller', 'Form', $path['path']);
 		if (!is_dir($_SERVER['PWD'] . '/app/Form/')) {
 			mkdir($_SERVER['PWD'] . '/app/Form/');
 		}
-		if (!file_exists($_SERVER['PWD'] . '/app/Form/' . $formClass . 'Form.php')) {
-			touch($_SERVER['PWD'] . '/app/Form/' . $formClass . 'Form.php');
+		if (!is_dir($path)) {
+			mkdir($path);
 		}
-		file_put_contents($_SERVER['PWD'] . '/app/Form/' . $formClass . 'Form.php', '<?php 
+		if (!file_exists($path . '/' . $formClass . 'Form.php')) {
+			touch($path . '/' . $formClass . 'Form.php');
+		}
+		file_put_contents($path . '/' . $formClass . 'Form.php', '<?php 
 
 namespace App\Form;
 
