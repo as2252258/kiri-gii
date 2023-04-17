@@ -38,6 +38,7 @@ abstract class GiiBase
 		'int'       => ['tinyint', 'smallint', 'mediumint', 'int', 'bigint'],
 		'string'    => ['char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext', 'enum'],
 		'date'      => ['date'],
+		'json'      => ['json'],
 		'time'      => ['time'],
 		'year'      => ['year'],
 		'datetime'  => ['datetime'],

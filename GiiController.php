@@ -546,6 +546,14 @@ use Kiri\Router\Annotate\AutoController;
 
 ',
 					};
+				} else if ($_key == 'json') {
+					$class .= '
+	/**
+	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
+	 */
+	public ?array $' . $val['Field'] . ' = null;
+
+';
 				} else {
 					if (isset($number[0])) {
 						if (strpos(',', $number[0])) {
