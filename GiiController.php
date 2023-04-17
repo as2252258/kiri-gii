@@ -546,7 +546,7 @@ use Kiri\Router\Annotate\AutoController;
 
 ',
 					};
-				} else if ($_key == 'json') {
+				} else if ($_key == 'json' || $_key == 'text' || $_key == 'longtext') {
 					$class .= '
 	/**
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
