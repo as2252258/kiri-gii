@@ -58,14 +58,14 @@ namespace {$namespace};
 
 ";
 		if (file_exists($path['path'] . '/' . $managerName . 'Controller.php')) {
-//			try {
-//				$class = new \ReflectionClass($controller);
-//
-//				$import = $this->getImports($path['path'] . '/' . $managerName . 'Controller.php', $class);
-//			} catch (\Throwable $Exception) {
-//				logger()->addError($Exception, 'throwable');
-//				exit();
-//			}
+			try {
+				$class = new \ReflectionClass($controller);
+
+				$import = $this->getImports($path['path'] . '/' . $managerName . 'Controller.php', $class);
+			} catch (\Throwable $Exception) {
+				logger()->addError($Exception, 'throwable');
+				exit();
+			}
 		} else {
 			$import = "use Kiri;
 use Exception;
@@ -129,13 +129,13 @@ use Psr\Http\Message\ResponseInterface;
 
 		$file = APP_PATH . 'routes/' . $this->input->getOption('database') . '.php';
 		if (!file_exists($file)) {
-//			touch($file);
-//			file_put_contents($file, '<?php' . PHP_EOL);
-//			file_put_contents($file, PHP_EOL, FILE_APPEND);
-//			file_put_contents($file, PHP_EOL, FILE_APPEND);
-//			file_put_contents($file, 'use Kiri\Message\Handler\Router;' . PHP_EOL, FILE_APPEND);
-//			file_put_contents($file, PHP_EOL, FILE_APPEND);
-//			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			touch($file);
+			file_put_contents($file, '<?php' . PHP_EOL);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, 'use Kiri\Message\Handler\Router;' . PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
+			file_put_contents($file, PHP_EOL, FILE_APPEND);
 		}
 
 		$tableName = str_replace($this->db->tablePrefix, '', $this->tableName);
@@ -153,15 +153,15 @@ use Psr\Http\Message\ResponseInterface;
 });
 ';
 		if (!str_contains($this->clearBlank(file_get_contents($file)), $this->clearBlank($addRouter))) {
-//			file_put_contents($file, $addRouter, FILE_APPEND);
+			file_put_contents($file, $addRouter, FILE_APPEND);
 		}
 
 		$file = $path['path'] . '/' . $controllerName . 'Controller.php';
 		if (file_exists($file)) {
-//			unlink($file);
+			unlink($file);
 		}
 
-//		Kiri::writeFile($file, $html);
+		Kiri::writeFile($file, $html);
 		return $controllerName . 'Controller.php';
 	}
 
