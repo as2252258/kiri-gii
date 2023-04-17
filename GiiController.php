@@ -333,7 +333,7 @@ use Kiri\Router\Annotate\AutoController;
 	 */
 	public function actionBatchDelete(): ResponseInterface
 	{
-		$_key = $this->request->array(\'ids\');		
+		$_key = $this->request->post(\'ids\', []);		
 		if (empty($_key)) {
 			return $this->response->json([\'code\' => 500, \'message\' => PARAMS_IS_NULL]);
 		}
@@ -400,7 +400,7 @@ use Kiri\Router\Annotate\AutoController;
 	 */
     public function actionDelete(): ResponseInterface
     {
-		$_key = $this->request->int(\'id\', true);
+		$_key = $this->request->post(\'id\', 0);
 		
 		$model = ' . $managerName . '::findOne($_key);
 		if (empty($model)) {
