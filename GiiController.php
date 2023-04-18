@@ -63,7 +63,7 @@ namespace {$namespace};
 
 				$import = $this->getImports($path['path'] . '/' . $managerName . 'Controller.php', $class);
 			} catch (\Throwable $Exception) {
-				logger()->addError($Exception, 'throwable');
+				error($Exception);
 				exit();
 			}
 		} else {

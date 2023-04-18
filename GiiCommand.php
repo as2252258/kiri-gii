@@ -70,7 +70,7 @@ class GiiCommand extends Command
 				}
 			}
 		} catch (\Throwable $throwable) {
-			$output->writeln($throwable->getMessage());
+			$output->writeln(throwable($throwable));
 		} finally {
 			return 1;
 		}
