@@ -527,7 +527,7 @@ use Kiri\Router\Annotate\AutoController;
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
 	#[Length(10)]
-	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+	public ?string $' . $val['Field'] . ' = null;
 
 ',
 						'time' => '
@@ -535,7 +535,7 @@ use Kiri\Router\Annotate\AutoController;
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
 	#[Length(5)]
-	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+	public ?string $' . $val['Field'] . ' = null;
 
 ',
 						default => '
@@ -543,7 +543,7 @@ use Kiri\Router\Annotate\AutoController;
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
 	#[Length(16)]
-	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+	public ?string $' . $val['Field'] . ' = null;
 
 ',
 					};
