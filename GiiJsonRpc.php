@@ -51,14 +51,12 @@ interface ' . ucfirst($name) . 'RpcInterface
 namespace Rpc\Producers;
 
 
-use Kiri\Annotation\Target;
 use Kiri\Annotation\Mapping;
 use Rpc\\' . ucfirst($name) . 'RpcInterface;
 use Exception;
 use Kiri\Rpc\JsonRpcConsumers;
 
 
-#[Target]
 #[Mapping(' . ucfirst($name) . 'RpcInterface::class)]
 class ' . ucfirst($name) . 'RpcService extends JsonRpcConsumers implements ' . ucfirst($name) . 'RpcInterface
 {
@@ -86,13 +84,11 @@ class ' . ucfirst($name) . 'RpcService extends JsonRpcConsumers implements ' . u
 namespace Rpc\Consumers;
 
 
-use Kiri\Annotation\Target;
 use Kiri\Rpc\Annotation\JsonRpc;
 use Kiri\Message\Handler\Controller;
 use Rpc\\' . ucfirst($name) . 'RpcInterface;
 
 
-#[Target]
 #[JsonRpc(service: \'' . $name . '\', version: \'2.0\')]
 class ' . ucfirst($name) . 'RpcConsumer extends Controller implements ' . ucfirst($name) . 'RpcInterface
 {

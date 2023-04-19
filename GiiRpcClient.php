@@ -39,7 +39,6 @@ namespace App\Client\Rpc;
 
 use Kiri\Annotation\Rpc\Consumer;
 use Kiri\Annotation\Rpc\RpcClient;
-use Kiri\Annotation\Target;
 use Exception;
 use Rpc\Client;
 use Kiri\Core\Json;
@@ -53,7 +52,6 @@ use Kiri;
  * Class ' . $managerName . 'Consumer
  * @package App\Client\Rpc
  */
-#[Target]
 #[RpcClient(cmd: \'' . $service . '\', port: ' . $port . ', timeout: 1, mode: ' . $mode . ')]
 class ' . $managerName . 'Consumer extends \Rpc\Consumer
 {

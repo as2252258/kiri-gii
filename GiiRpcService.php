@@ -35,7 +35,6 @@ class GiiRpcService extends GiiBase
 namespace App\Rpc;
 
 use Kiri\Annotation\Route\RpcProducer;
-use Kiri\Annotation\Target;
 use Exception;
 use Kiri\Message\Controller;
 use Kiri\Core\Json;
@@ -48,7 +47,6 @@ use Kiri\Core\Json;
  * Class ' . $managerName . 'Consumer
  * @package App\Client\Rpc
  */
-#[Target]
 class ' . $managerName . 'Producer extends Controller
 {
 

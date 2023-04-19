@@ -77,7 +77,6 @@ namespace ' . $namespace . ';
 
 
 use Exception;
-use Kiri\Annotation\Target;
 use Kiri\Core\Json;
 use Database\Connection;
 use Database\Model;
@@ -98,7 +97,7 @@ use Database\Model;
  *
  *' . implode('', $this->visible) . '
  */
-#[Target] class ' . $managerName . ' extends Model
+class ' . $managerName . ' extends Model
 {
 
 ';
