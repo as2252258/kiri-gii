@@ -210,6 +210,7 @@ use Kiri\Router\Annotate\AutoController;
 
 		return '
     /**
+     * @param Validator $form
 	 * @return ResponseInterface
 	 * @throws Exception
 	 */
@@ -290,6 +291,7 @@ use Kiri\Router\Annotate\AutoController;
 
 		return '
     /**
+     * @param Validator $form
 	 * @return ResponseInterface
 	 * @throws Exception
 	 */
