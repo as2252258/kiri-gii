@@ -237,7 +237,7 @@ class ' . $managerName . ' extends Model
 		foreach ($data as $key => $val) {
 			$field = '[\'' . implode('\', \'', array_column($val, 'Field')) . '\']';
 			if (count($val) == 1) {
-				$field = '\'' . current($val)['Field'] . '\'';
+				$field = '[\'' . current($val)['Field'] . '\']';
 			}
 			$_field_one .= '
 			[' . $field . ', \'' . $key . '\'],';
