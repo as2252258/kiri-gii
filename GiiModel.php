@@ -151,7 +151,7 @@ class ' . $managerName . ' extends Model
 			if ($field['Type'] === 'json') {
 				$function = '
 	/**
-	 * @param string|null $value
+	 * @param array|null $value
 	 * @return int|bool|string
 	 * @throws Exception
     */
@@ -163,7 +163,7 @@ class ' . $managerName . ' extends Model
 
 				$get_function = '
 	/**
-	 * @param $value
+	 * @param string|null $value
 	 * @return array|null|bool
 	 */
 	public function get' . ucfirst($field['Field']) . 'Attribute(?string $value): array|null|bool
