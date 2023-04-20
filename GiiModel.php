@@ -289,14 +289,8 @@ class ' . $managerName . ' extends Model
 			} else {
 				$key = '\'maxLength\' => ' . $key;
 			}
-			if (count($_val) == 1) {
-				$_tmp = '
-			[\'' . $_val[0][3] . '\', ' . ($_val[0][1] == 'enum' ? '\'enum\' => [' . $key .']' : $key) . ']';
-			} else {
-				$_tmp = '
+			$string[] = '
 			[[\'' . implode('\', \'', array_column($_val, 3)) . '\'], ' . ($_val[0][1] == 'enum' ? '\'enum\' => [' . $key .']' : $key) . ']';
-			}
-			$string[] = $_tmp;
 		}
 		return implode(',', $string);
 	}
