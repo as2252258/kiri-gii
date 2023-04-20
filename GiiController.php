@@ -321,7 +321,7 @@ use Kiri\Router\Annotate\AutoController;
 	 * @return string
 	 * 构建更新
 	 */
-	public function controllerMethodBatchDelete($fields, $className, $object = NULL, $path = []): string
+	public function controllerMethodBatchDelete($fields, $className, $object = NULL, array $path = []): string
 	{
 		$_path = str_replace(CONTROLLER_PATH, '', $path['path']);
 		$_path = lcfirst(rtrim($_path, '/')) . '/' . lcfirst($className);
