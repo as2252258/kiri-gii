@@ -160,7 +160,7 @@ class ' . $managerName . ' extends Model
 		if (is_null($value)) {
 			$value = [];
 		}
-		return \json_encode($value, JSON_UNESCAPED_UNICODE); 
+		return \json_encode($value); 
 	}
 	';
 
