@@ -157,6 +157,9 @@ class ' . $managerName . ' extends Model
     */
 	public function set' . ucfirst($field['Field']) . 'Attribute(?array $value): int|bool|string
 	{
+		if (is_null($value)) {
+			$value = [];
+		}
 		return \json_encode($value, JSON_UNESCAPED_UNICODE); 
 	}
 	';
@@ -168,7 +171,10 @@ class ' . $managerName . ' extends Model
 	 */
 	public function get' . ucfirst($field['Field']) . 'Attribute(?string $value): array|null|bool
 	{
-		return \json_decode($value, true); 
+		if (!is_null($value)) {
+			return \json_decode($value, true);
+		}
+		return null; 
 	}
 	';
 
