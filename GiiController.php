@@ -224,7 +224,7 @@ use Kiri\Router\Annotate\AutoController;
 		if (!$model->save()) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
-			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
+			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
 		}
 	}';
 	}
@@ -246,7 +246,7 @@ use Kiri\Router\Annotate\AutoController;
 		if (!$model->update([\'state\' => 1])) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
-			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
+			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
 		}
 	}';
 	}
@@ -308,7 +308,7 @@ use Kiri\Router\Annotate\AutoController;
 		if (!$model->save()) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
-			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
+			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
 		}
 	}';
 	}
@@ -344,7 +344,7 @@ use Kiri\Router\Annotate\AutoController;
 		if (!$model->delete()) {
 			return $this->response->json([\'code\' => 500, \'message\' => DB_ERROR_BUSY]);
 		} else {
-			return $this->response->json([\'code\' => 0, \'data\' => $_key]);		
+			return $this->response->json([\'code\' => 0, \'param\' => $_key]);		
         }
 	}';
 	}
@@ -375,7 +375,7 @@ use Kiri\Router\Annotate\AutoController;
         if (empty($model)) {
 			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
 		} else {
-			return $this->response->json([\'code\' => 0, \'data\' => $model->toArray()]);		
+			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
         }
     }';
 	}
@@ -467,7 +467,7 @@ use Kiri\Router\Annotate\AutoController;
 	    
 		$data = $model->all()->toArray();
 		
-		return $this->response->json([\'code\' => 0, \'data\' => $data, \'count\' => $count]);
+		return $this->response->json([\'code\' => 0, \'param\' => $data, \'count\' => $count]);
     }
     ';
 	}
