@@ -7,7 +7,6 @@ namespace Gii;
 use Exception;
 use Kiri;
 use Kiri\Di\LocalService;
-use Kiri\Abstracts\Config;
 use Kiri\Exception\ConfigException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -63,7 +62,7 @@ class GiiCommand extends Command
 					$gii->run(null, $input);
 				} else {
 					$array = [];
-					foreach (Config::get('databases.connections') as $key => $connection) {
+					foreach (\config('databases.connections') as $key => $connection) {
 						$array[$key] = $gii->run($this->service->get($key), $input);
 					}
 					$output->writeln(json_encode($array, JSON_UNESCAPED_UNICODE));
