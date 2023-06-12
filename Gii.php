@@ -253,7 +253,7 @@ class Gii
 		}
 		foreach ($tables as $key => $val) {
 			if (empty($val)) continue;
-			$_tmp = Db::findAllBySql('SHOW FULL FIELDS FROM `' . $this->db->database . '`.' . $val, [], $this->db);
+			$_tmp = Db::connect($this->db)->query('SHOW FULL FIELDS FROM `' . $this->db->database . '`.' . $val, []);
 			if (empty($_tmp)) {
 				continue;
 			}
