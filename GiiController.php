@@ -6,9 +6,7 @@ namespace Gii;
 
 use Exception;
 use Kiri;
-use Kiri\ToArray;
 use ReflectionException;
-use function logger;
 
 /**
  * Class GiiController
