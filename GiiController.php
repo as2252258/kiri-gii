@@ -462,7 +462,7 @@ class {$controllerName}Controller extends Controller
 		    $model->offset($offset)->limit($size);
 	    }
 	    
-		$data = $model->all()->toArray();
+		$data = $model->get()->toArray();
 		
 		return $this->response->json([\'code\' => 0, \'param\' => $data, \'count\' => $count]);
     }
