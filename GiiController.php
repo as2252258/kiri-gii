@@ -49,24 +49,24 @@ class GiiController extends GiiBase
 		$model_namespace = rtrim($modelPath['namespace'], '\\');
 
 		$class = '';
-		$controller = str_replace('\\\\', '\\', "$namespace\\{$managerName}AutoController");
+		$controller = str_replace('\\\\', '\\', "$namespace\\{$managerName}Controller");
 
 		$html = "<?php
 namespace {$namespace};
 
 ";
-		if (file_exists($path['path'] . '/' . $managerName . 'AutoController.php')) {
+		if (file_exists($path['path'] . '/' . $managerName . 'Controller.php')) {
 			try {
 				$class = new \ReflectionClass($controller);
 
-				$import = $this->getImports($path['path'] . '/' . $managerName . 'AutoController.php', $class);
+				$import = $this->getImports($path['path'] . '/' . $managerName . 'Controller.php', $class);
 			} catch (\Throwable $Exception) {
 				error($Exception);
 				exit();
 			}
 		} else {
 			$import = "use Exception;
-use " . (str_replace('AutoController', 'Form', $namespace)) . "\\{$managerName}Form;
+use " . (str_replace('Controller', 'Form', $namespace)) . "\\{$managerName}Form;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
 use Kiri\Router\Base\Controller;
@@ -74,7 +74,6 @@ use {$model_namespace}\\{$managerName};
 use Kiri\Router\Validator\BindForm;
 use Kiri\Router\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
-use Kiri\Router\Annotate\AutoController;
 
 ";
 		}
@@ -92,11 +91,11 @@ use Kiri\Router\Annotate\AutoController;
 		$html .= "
 		
 /**
- * Class {$controllerName}AutoController
+ * Class {$controllerName}Controller
  *
  * @package controller
  */
-#[AutoController] class {$controllerName}AutoController extends AutoController
+class {$controllerName}Controller extends Controller
 {
 
 ";
@@ -135,27 +134,27 @@ use Kiri\Router\Annotate\AutoController;
 		$tableName = str_replace('_', '-', $tableName);
 
 		$addRouter = 'Router::group([\'prefix\' => \'' . $tableName . '\',\'namespace\' => \'' . $namespace . '\'], function () {
-	Router::post(\'add\', \'' . $controllerName . 'AutoController@actionAdd\');
-	Router::get(\'list\', \'' . $controllerName . 'AutoController@actionList\');
-	Router::post(\'update\', \'' . $controllerName . 'AutoController@actionUpdate\');
-	Router::post(\'auditing\', \'' . $controllerName . 'AutoController@actionAuditing\');
-	Router::post(\'batch-auditing\', \'' . $controllerName . 'AutoController@actionBatchAuditing\');
-	Router::post(\'batch-delete\', \'' . $controllerName . 'AutoController@actionBatchDelete\');
-	Router::post(\'delete\', \'' . $controllerName . 'AutoController@actionDelete\');
-	Router::get(\'detail\', \'' . $controllerName . 'AutoController@actionDetail\');
+	Router::post(\'add\', \'' . $controllerName . 'Controller@actionAdd\');
+	Router::get(\'list\', \'' . $controllerName . 'Controller@actionList\');
+	Router::post(\'update\', \'' . $controllerName . 'Controller@actionUpdate\');
+	Router::post(\'auditing\', \'' . $controllerName . 'Controller@actionAuditing\');
+	Router::post(\'batch-auditing\', \'' . $controllerName . 'Controller@actionBatchAuditing\');
+	Router::post(\'batch-delete\', \'' . $controllerName . 'Controller@actionBatchDelete\');
+	Router::post(\'delete\', \'' . $controllerName . 'Controller@actionDelete\');
+	Router::get(\'detail\', \'' . $controllerName . 'Controller@actionDetail\');
 });
 ';
 		if (!str_contains($this->clearBlank(file_get_contents($file)), $this->clearBlank($addRouter))) {
 			file_put_contents($file, $addRouter, FILE_APPEND);
 		}
 
-		$file = $path['path'] . '/' . $controllerName . 'AutoController.php';
+		$file = $path['path'] . '/' . $controllerName . 'Controller.php';
 		if (file_exists($file)) {
 			unlink($file);
 		}
 
 		Kiri::writeFile($file, $html);
-		return $controllerName . 'AutoController.php';
+		return $controllerName . 'Controller.php';
 	}
 
 
@@ -589,8 +588,8 @@ use Kiri\Router\Annotate\AutoController;
 			$this->rules[$val['Field']] = $_field;
 		}
 
-		$namespace = str_replace('AutoController', 'Form', $path['namespace']);
-		$path = str_replace('AutoController', 'Form', $path['path']);
+		$namespace = str_replace('Controller', 'Form', $path['namespace']);
+		$path = str_replace('Controller', 'Form', $path['path']);
 		if (!is_dir($_SERVER['PWD'] . '/app/Form/')) {
 			mkdir($_SERVER['PWD'] . '/app/Form/');
 		}
