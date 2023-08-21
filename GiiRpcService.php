@@ -47,7 +47,7 @@ use Kiri\Core\Json;
  * Class ' . $managerName . 'Consumer
  * @package App\Client\Rpc
  */
-class ' . $managerName . 'Producer extends AutoController
+class ' . $managerName . 'Producer extends Controller
 {
 
 

@@ -90,7 +90,7 @@ use Rpc\\' . ucfirst($name) . 'RpcInterface;
 
 
 #[JsonRpc(service: \'' . $name . '\', version: \'2.0\')]
-class ' . ucfirst($name) . 'RpcConsumer extends AutoController implements ' . ucfirst($name) . 'RpcInterface
+class ' . ucfirst($name) . 'RpcConsumer extends Controller implements ' . ucfirst($name) . 'RpcInterface
 {
 
 

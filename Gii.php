@@ -31,8 +31,8 @@ class Gii
 	public string $modelPath = APP_PATH . 'app/Model/';
 	public string $modelNamespace = 'App\Model\\';
 
-	public string $controllerPath = APP_PATH . 'app/AutoController/';
-	public string $controllerNamespace = 'App\\AutoController\\';
+	public string $controllerPath = APP_PATH . 'app/Controller/';
+	public string $controllerNamespace = 'App\\Controller\\';
 
 
 	public static array $createSqls = [];
