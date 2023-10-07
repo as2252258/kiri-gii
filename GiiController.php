@@ -66,12 +66,10 @@ namespace {$namespace};
 			}
 		} else {
 			$import = "use Exception;
-use " . (str_replace('Controller', 'Form', $namespace)) . "\\{$managerName}Form;
 use Kiri\Core\Str;
 use Kiri\Core\Json;
 use Kiri\Router\Base\Controller;
 use {$model_namespace}\\{$managerName};
-use Kiri\Router\Validator\BindForm;
 use Kiri\Router\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 
@@ -203,21 +201,17 @@ class {$controllerName}Controller extends Controller
 
 		$_path = ltrim($_path, '/');
 
-		$this->getData($path, $className, $fields);
+//		$this->getData($path, $className, $fields);
 
 		return '
     /**
-     * @param Validator $form
 	 * @return ResponseInterface
 	 * @throws Exception
 	 */
-	public function actionAdd(#[BindForm(' . $className . 'Form::class)] Validator $form): ResponseInterface
+	public function actionAdd(): ResponseInterface
 	{
-		if (!$form->run($this->request)) {
-			return $this->response->json([\'code\' => 500, \'message\' => $form->error()]);
-		}
 		$model = new ' . $className . '();
-		$model->attributes = $form->getFormData()->toArray();
+		$model->attributes = $this->request->all();
 		if (!$model->save()) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
@@ -288,20 +282,16 @@ class {$controllerName}Controller extends Controller
 
 		return '
     /**
-     * @param Validator $form
 	 * @return ResponseInterface
 	 * @throws Exception
 	 */
-	public function actionUpdate(#[BindForm(' . $className . 'Form::class)] Validator $form): ResponseInterface
+	public function actionUpdate(): ResponseInterface
 	{
-		if (!$form->run($this->request)) {
-			return $this->response->json([\'code\' => 500, \'message\' => $form->error()]);
-		}
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
 		if (empty($model)) {
 			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
 		}
-		$model->attributes = $form->getFormData()->toArray();
+		$model->attributes = $this->request->all();
 		if (!$model->save()) {
 			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
 		} else {
@@ -526,7 +516,7 @@ class {$controllerName}Controller extends Controller
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
 	#[Length(10)]
-	public ?string $' . $val['Field'] . ' = null;
+	public string $' . $val['Field'] . ' = \'1960-06-01\';
 
 ',
 						'time' => '
@@ -534,7 +524,7 @@ class {$controllerName}Controller extends Controller
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
 	#[Length(5)]
-	public ?string $' . $val['Field'] . ' = null;
+	public string $' . $val['Field'] . ' = \'00:00\';
 
 ',
 						default => '
@@ -542,7 +532,7 @@ class {$controllerName}Controller extends Controller
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
 	#[Length(16)]
-	public ?string $' . $val['Field'] . ' = null;
+	public string $' . $val['Field'] . ' = \'\';
 
 ',
 					};
@@ -551,7 +541,7 @@ class {$controllerName}Controller extends Controller
 	/**
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */
-	public ?array $' . $val['Field'] . ' = null;
+	public string $' . $val['Field'] . ' = \'\';
 
 ';
 				} else {
@@ -577,10 +567,14 @@ class {$controllerName}Controller extends Controller
 	/**
 	 * ' . (empty($comment) ? '这批懒的很，没写注释' : $comment) . '
 	 */' . ($type == 'enum' ? '
-	#[In([' . $number[0] . '])]' : '') . '' . ($_field['required'] == 'true' ? '
+	#[In([' . $number[0] . '])]' : '') . ($_field['required'] == 'true' ? '
 	#[Required]' : '') . '
 	#[MaxLength(' . ($number[1] ?? 0) . ')]
-	public ?' . $_key . ' $' . $val['Field'] . ' = null;
+	public ' . $_key . ' $' . $val['Field'] . ' = '.(match ($type) {
+        'tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'float', 'double', 'decimal', 'timestamp', 'year' => 0,
+        'bool', 'boolean' => false,
+        default => '\'\'',
+                        }).';
 
 ';
 				}
