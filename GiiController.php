@@ -208,18 +208,18 @@ class {$controllerName}Controller extends Controller
 
         return '
     /**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	#[Post(\'' . $this->db->database . '/' . $tableName . '/add\')]
-	public function actionAdd(): ResponseInterface
+	public function actionAdd(): array
 	{
 		$model = new ' . $className . '();
 		$model->attributes = $this->request->all();
 		if (!$model->save()) {
-			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
+			return [\'code\' => 500, \'message\' => $model->getLastError()];
 		} else {
-			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
+			return [\'code\' => 0, \'param\' => $model->toArray()];
 		}
 	}';
     }
@@ -237,20 +237,20 @@ class {$controllerName}Controller extends Controller
     {
         return '
 	/**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	#[Post(\'' . $this->db->database . '/' . $tableName . '/auditing\')]
-	public function actionAuditing(): ResponseInterface
+	public function actionAuditing(): array
 	{
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
 		if (empty($model)) {
-			return $this->response->json([\'code\' => 500, \'message\' => \'必填项不能为空\']);
+			return [\'code\' => 500, \'message\' => \'必填项不能为空\'];
 		}
 		if (!$model->update([\'state\' => 1])) {
-			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
+			return [\'code\' => 500, \'message\' => $model->getLastError()];
 		} else {
-			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
+			return [\'code\' => 0, \'param\' => $model->toArray()];
 		}
 	}';
     }
@@ -268,20 +268,21 @@ class {$controllerName}Controller extends Controller
     {
         return '
 	/**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	#[Post(\'' . $this->db->database . '/' . $tableName . '/batch/auditing\')]
-	public function actionBatchAuditing(): ResponseInterface
+	public function actionBatchAuditing(): array
 	{
 		$ids = $this->request->post(\'ids\', []);
 		if (empty($ids)) {
-			return $this->response->json([\'code\' => 500, \'message\' => \'必填项不能为空\']);
+			return [\'code\' => 500, \'message\' => \'必填项不能为空\'];
 		}
-		if (!' . $className . '::query()->whereIn(\'id\', $ids)->update([\'state\' => 1])) {
-			return $this->response->json([\'code\' => 500, \'message\' => \'系统繁忙, 请稍后再试\']);
+		$model = ' . $className . '::query()->whereIn(\'id\', $ids);
+		if (!$model->update([\'state\' => 1])) {
+			return [\'code\' => 500, \'message\' => \'系统繁忙, 请稍后再试\'];
 		} else {
-			return $this->response->json([\'code\' => 0, \'message\' => \'ok\']);
+			return [\'code\' => 0, \'message\' => \'ok\'];
 		}
 	}';
     }
@@ -305,21 +306,21 @@ class {$controllerName}Controller extends Controller
 
         return '
     /**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	#[Post(\'' . $this->db->database . '/' . $tableName . '/update\')]
-	public function actionUpdate(): ResponseInterface
+	public function actionUpdate(): array
 	{
 		$model = ' . $className . '::findOne($this->request->post(\'id\', 0));
 		if (empty($model)) {
-			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
+			return [\'code\' => 500, \'message\' => SELECT_IS_NULL];
 		}
 		$model->attributes = $this->request->all();
 		if (!$model->save()) {
-			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
+			return [\'code\' => 500, \'message\' => $model->getLastError()];
 		} else {
-			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
+			return [\'code\' => 0, \'param\' => $model->toArray()];		
 		}
 	}';
     }
@@ -342,22 +343,22 @@ class {$controllerName}Controller extends Controller
 
         return '
     /**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	#[Post(\'' . $this->db->database . '/' . $tableName . '/batch/delete\')]
-	public function actionBatchDelete(): ResponseInterface
+	public function actionBatchDelete(): array
 	{
 		$_key = $this->request->post(\'ids\', []);		
 		if (empty($_key)) {
-			return $this->response->json([\'code\' => 500, \'message\' => PARAMS_IS_NULL]);
+			return [\'code\' => 500, \'message\' => PARAMS_IS_NULL];
 		}
 		
 		$model = ' . $className . '::query()->whereIn(\'id\', $_key);
 		if (!$model->delete()) {
-			return $this->response->json([\'code\' => 500, \'message\' => DB_ERROR_BUSY]);
+			return [\'code\' => 500, \'message\' => DB_ERROR_BUSY];
 		} else {
-			return $this->response->json([\'code\' => 0, \'param\' => $_key]);		
+			return [\'code\' => 0, \'param\' => $_key];
         }
 	}';
     }
@@ -380,17 +381,17 @@ class {$controllerName}Controller extends Controller
 
         return '
     /**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	#[Get(\'' . $this->db->database . '/' . $tableName . '/detail\')]
-    public function actionDetail(): ResponseInterface
+    public function actionDetail(): array
     {
         $model = ' . $managerName . '::findOne($this->request->query(\'id\'));
         if (empty($model)) {
-			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
+			return [\'code\' => 500, \'message\' => SELECT_IS_NULL];
 		} else {
-			return $this->response->json([\'code\' => 0, \'param\' => $model->toArray()]);		
+			return [\'code\' => 0, \'param\' => $model->toArray()];
         }
     }';
     }
@@ -413,22 +414,22 @@ class {$controllerName}Controller extends Controller
 
         return '
     /**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
     #[Post(\'' . $this->db->database . '/' . $tableName . '/delete\')]
-    public function actionDelete(): ResponseInterface
+    public function actionDelete(): array
     {
 		$_key = $this->request->post(\'id\', 0);
 		
 		$model = ' . $managerName . '::findOne($_key);
 		if (empty($model)) {
-			return $this->response->json([\'code\' => 500, \'message\' => SELECT_IS_NULL]);
+			return [\'code\' => 500, \'message\' => SELECT_IS_NULL];
 		}
         if (!$model->delete()) {
-			return $this->response->json([\'code\' => 500, \'message\' => $model->getLastError()]);
+			return [\'code\' => 500, \'message\' => $model->getLastError()];
 		} else {
-			return $this->response->json([\'code\' => 0, \'message\' => \'ok\']);		
+			return [\'code\' => 0, \'message\' => \'ok\'];
         }
     }';
     }
@@ -451,11 +452,11 @@ class {$controllerName}Controller extends Controller
         $_path = ltrim($_path, '/');
         return '
     /**
-	 * @return ResponseInterface
+	 * @return array
 	 * @throws Exception
 	 */
 	 #[Get(\'' . $this->db->database . '/' . $tableName . '/list\')]
-    public function actionList(): ResponseInterface
+    public function actionList(): array
     {        
         //分页处理
 	    $count   = $this->request->query(\'count\', -1);
@@ -486,7 +487,7 @@ class {$controllerName}Controller extends Controller
 	    
 		$data = $model->get()->toArray();
 		
-		return $this->response->json([\'code\' => 0, \'param\' => $data, \'count\' => $count]);
+		return [\'code\' => 0, \'param\' => $data, \'count\' => $count];
     }
     ';
     }
