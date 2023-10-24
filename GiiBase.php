@@ -86,8 +86,8 @@ abstract class GiiBase
 	/**
 	 * @param $module
 	 */
-	public function setModule($module)
-	{
+	public function setModule($module): void
+    {
 		$this->module = $module;
 	}
 
@@ -103,8 +103,8 @@ abstract class GiiBase
 	/**
 	 * @param InputInterface $input
 	 */
-	public function setInput(InputInterface $input)
-	{
+	public function setInput(InputInterface $input): void
+    {
 		$this->input = $input;
 	}
 
@@ -398,8 +398,8 @@ abstract class GiiBase
 	/**
 	 * @param $db
 	 */
-	public function setConnection($db)
-	{
+	public function setConnection($db): void
+    {
 		$this->db = $db;
 	}
 
