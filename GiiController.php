@@ -204,7 +204,7 @@ class {$controllerName}Controller extends Controller
 
         $_path = ltrim($_path, '/');
 
-//		$this->getData($path, $className, $fields);
+		$this->getData($path, $className, $fields);
 
         return '
     /**
@@ -635,33 +635,10 @@ use Kiri\ToArray;
 /**
  * FormData
  */
-class ' . $formClass . 'Form implements ToArray, \JsonSerializable, \Stringable
+class ' . $formClass . 'Form implements \Arrayable
 {
 
 ' . $class . '
-
-	/**
-	 * @return bool|string
-	 */
-	public function jsonSerialize(): bool|string
-	{
-		// TODO: Implement jsonSerialize() method.
-		return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
-	}
-	
-	
-	/**
-	 * @return string
-	 */
-	public function __toString(): string
-	{
-		// TODO: Implement __toString() method.
-		$json = $this->jsonSerialize();
-		if (!$json) {
-			return \'\';
-		}
-		return $json;
-	}
 	
 
 	/**
