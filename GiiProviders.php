@@ -6,7 +6,6 @@ namespace Gii;
 
 
 use Kiri\Abstracts\Providers;
-use Kiri\Di\LocalService;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Console\Application;
@@ -19,17 +18,14 @@ class GiiProviders extends Providers
 {
 
 
-	/**
-	 * @param LocalService $application
-	 * @return void
-	 * @throws ContainerExceptionInterface
-	 * @throws NotFoundExceptionInterface
-	 */
-	public function onImport(LocalService $application): void
-	{
-		$application->set('gii', ['class' => Gii::class]);
-
-		$console = $this->container->get(Application::class);
-		$console->add($this->container->get(GiiCommand::class));
-	}
+    /**
+     * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function onImport(): void
+    {
+        $console = $this->container->get(Application::class);
+        $console->add($this->container->get(GiiCommand::class));
+    }
 }
