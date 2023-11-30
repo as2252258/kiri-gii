@@ -630,7 +630,6 @@ class {$controllerName}Controller extends Controller
 
 namespace ' . $namespace . ';
 
-use Kiri\ToArray;
 ' . implode(PHP_EOL, $header) . PHP_EOL . PHP_EOL . '
 /**
  * FormData
