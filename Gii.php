@@ -217,7 +217,7 @@ class Gii
     private function showAll(): array
     {
         $res     = [];
-        $_tables    = Db::connect($this->db)->query('SHOW TABLES FROM `' . $this->db->database . '`');
+        $_tables    = Db::connect($this->db)->fetchAll('SHOW TABLES FROM `' . $this->db->database . '`');
         if (empty($_tables)) {
             return $res;
         }
@@ -234,7 +234,7 @@ class Gii
      */
     private function getIndex($table): bool|int|null
     {
-        $data = Db::connect($this->db)->query('SHOW INDEX FROM `' . $this->db->database . '`.`' . $table . '`', []);
+        $data = Db::connect($this->db)->fetchAll('SHOW INDEX FROM `' . $this->db->database . '`.`' . $table . '`', []);
 
         return empty($data) ? NULL : $data[0];
     }
@@ -253,7 +253,7 @@ class Gii
         }
         foreach ($tables as $key => $val) {
             if (empty($val)) continue;
-            $_tmp = Db::connect($this->db)->query('SHOW FULL FIELDS FROM `' . $this->db->database . '`.' . $val, []);
+            $_tmp = Db::connect($this->db)->fetchAll('SHOW FULL FIELDS FROM `' . $this->db->database . '`.' . $val, []);
             if (empty($_tmp)) {
                 continue;
             }

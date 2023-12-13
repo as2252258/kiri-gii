@@ -391,7 +391,7 @@ class ' . $managerName . ' extends Model
             return Gii::$createSqls[$table];
         }
 
-        $text = Db::connect($this->db)->one('SHOW CREATE TABLE `'.$this->db->database. '`.`' . $table.'`')['Create Table'] ?? '';
+        $text = Db::connect($this->db)->fetch('SHOW CREATE TABLE `'.$this->db->database. '`.`' . $table.'`')['Create Table'] ?? '';
 
         $_tmp = [];
         foreach (explode(PHP_EOL, $text) as $val) {
