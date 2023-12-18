@@ -72,6 +72,9 @@ namespace ' . $namespace . ';
 
         if (empty($html)) {
             $html = '<?php
+
+declare(strict_types=1);
+
 namespace ' . $namespace . ';
 
 

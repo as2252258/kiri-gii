@@ -52,6 +52,9 @@ class GiiController extends GiiBase
         $controller = str_replace('\\\\', '\\', "$namespace\\{$managerName}Controller");
 
         $html = "<?php
+
+declare(strict_types=1);
+
 namespace {$namespace};
 
 ";
