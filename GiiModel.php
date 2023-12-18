@@ -57,6 +57,9 @@ class GiiModel extends GiiBase
                 $class = Kiri::getDi()->getReflectionClass($className);
 
                 $html = '<?php
+
+declare(strict_types=1);
+
 namespace ' . $namespace . ';
 
 ';
@@ -79,8 +82,6 @@ namespace ' . $namespace . ';
 
 
 use Exception;
-use Kiri\Core\Json;
-use Database\Connection;
 use Database\Model;
 ' . PHP_EOL;
         }
